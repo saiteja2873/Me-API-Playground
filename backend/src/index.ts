@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
 
 import profile from "./routes/profile";
@@ -17,7 +16,7 @@ app.route("/profile", profile);
 app.route("/query", query)
 console.log("Query router mounted.");
 
-serve({
+Bun.serve({
   fetch: app.fetch,
   port: 3001,
 });
