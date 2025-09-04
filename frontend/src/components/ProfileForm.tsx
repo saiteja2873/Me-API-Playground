@@ -19,22 +19,22 @@ export default function ProfileForm({
 }: Props) {
   const [formData, setFormData] = useState<Profile>(
     initialData || {
-      id: "", // optional if updating
+      id: "",
       name: "",
       email: "",
       education: "",
       skills: [],
       projects: [],
       work: [],
-      links: {},
+      links: { github: "", linkedin: "", portfolio: "" }, // ensure keys initialized
     }
   );
-  const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState("");
   const [projectInput, setProjectInput] = useState<Project>({
     title: "",
     description: "",
     link: "",
+    pskills: [],
   });
   const [workInput, setWorkInput] = useState<WorkExperience>({
     company: "",
@@ -47,23 +47,25 @@ export default function ProfileForm({
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null);
   const [editingWorkIndex, setEditingWorkIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  // Handlers...
 
   const handleAddSkill = () => {
     const trimmed = skillInput.trim();
-
     if (trimmed && !formData.skills.includes(trimmed)) {
       setFormData({ ...formData, skills: [...formData.skills, trimmed] });
       setSkillInput("");
     }
   };
 
-  const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(
-    null
-  );
-
   const handleAddProject = () => {
-    if (!projectInput.title.trim()) return;
+    if (!projectInput.title.trim()) {
+      toast.error("Project title is required");
+      return;
+    }
 
     if (editingProjectIndex !== null) {
       const updatedProjects = [...formData.projects];
@@ -77,11 +79,14 @@ export default function ProfileForm({
       });
     }
 
-    setProjectInput({ title: "", description: "", link: "" });
+    setProjectInput({ title: "", description: "", link: "", pskills: [] });
   };
 
   const handleAddWork = () => {
-    if (!workInput.company.trim()) return;
+    if (!workInput.company.trim()) {
+      toast.error("Work company is required");
+      return;
+    }
 
     if (editingWorkIndex !== null) {
       const updatedWork = [...formData.work];
@@ -103,52 +108,52 @@ export default function ProfileForm({
     setFormData({ ...formData, links: { ...formData.links, [field]: value } });
   };
 
-  // ✅ Create handler
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      toast.error("Name is required");
+      return false;
+    }
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (formData.skills.length === 0) {
+      toast.error("Please add at least one skill.");
+      return false;
+    }
+    if (formData.projects.length === 0) {
+      toast.error("Please add at least one project.");
+      return false;
+    }
+    if (formData.work.length === 0) {
+      toast.error("Please add at least one work experience.");
+      return false;
+    }
+    return true;
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
-    if (formData.skills.length === 0) {
-      toast.error("Please add at least one skill.");
-      setSaving(false);
-      return;
-    }
-    if (formData.projects.length === 0) {
-      toast.error("Please add at least one project.");
-      setSaving(false);
-      return;
-    }
-    if (formData.work.length === 0) {
-      toast.error("Please add at least one work experience.");
+    if (!validateForm()) {
       setSaving(false);
       return;
     }
 
     try {
-      const payload = { ...formData };
-      delete (payload as any).id;
+      const { id, ...payload } = formData; // remove id for create
       onCreate(payload);
-      setFormData({
-        id: "",
-        name: "",
-        email: "",
-        education: "",
-        skills: [],
-        projects: [],
-        work: [],
-        links: {},
-      });
       toast.success("Profile created successfully!");
       navigate("/");
     } catch (err: any) {
-      toast.error("Failed to create profile");
+      setError("Failed to create profile");
     } finally {
       setSaving(false);
     }
   };
 
-  // ✅ Update handler
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -160,10 +165,14 @@ export default function ProfileForm({
       return;
     }
 
+    if (!validateForm()) {
+      setSaving(false);
+      return;
+    }
+
     try {
-      const payload = { ...formData };
-      delete (payload as any).id;
-      onUpdate({ ...payload, id: formData.id });
+      onUpdate(formData);
+      toast.success("Profile updated successfully!");
     } catch (err: any) {
       setError(err.message || "Failed to update profile");
     } finally {
@@ -172,60 +181,67 @@ export default function ProfileForm({
   };
 
   return (
-    <form className="bg-white shadow-lg p-6 rounded-xl space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
+    <form
+      onSubmit={formData.id ? handleUpdate : handleCreate}
+      className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md space-y-6"
+      noValidate
+    >
+      {error && <p className="text-red-600 font-semibold">{error}</p>}
 
       {/* Basic Info */}
-      <input
-        type="text"
-        placeholder="Name"
-        value={formData.name}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        className="border p-2 w-full rounded"
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        className="border p-2 w-full rounded"
-        required
-      />
-      <input
-        type="text"
-        placeholder="Education"
-        value={formData.education}
-        onChange={(e) =>
-          setFormData({ ...formData, education: e.target.value })
-        }
-        className="border p-2 w-full rounded"
-      />
+      <div className="space-y-3">
+        <input
+          type="text"
+          placeholder="Name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="border rounded-md p-3 w-full focus:outline-blue-500"
+          required
+          autoComplete="name"
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          className="border rounded-md p-3 w-full focus:outline-blue-500"
+          required
+          autoComplete="email"
+        />
+        <input
+          type="text"
+          placeholder="Education"
+          value={formData.education}
+          onChange={(e) => setFormData({ ...formData, education: e.target.value })}
+          className="border rounded-md p-3 w-full focus:outline-blue-500"
+          autoComplete="education"
+        />
+      </div>
 
-      {/* Skills */}
+      {/* Skills Section */}
       <div>
-        <h3 className="font-semibold mb-2">Skills</h3>
-        <div className="flex gap-2 mb-2">
+        <h3 className="text-lg font-semibold mb-2">Skills</h3>
+        <div className="flex gap-2 mb-3">
           <input
             type="text"
-            placeholder="Add skill"
             value={skillInput}
             onChange={(e) => setSkillInput(e.target.value)}
-            className="border p-2 flex-1 rounded"
+            placeholder="Add skill"
+            className="border rounded-md p-2 flex-grow focus:outline-blue-500"
           />
           <button
             type="button"
             onClick={handleAddSkill}
-            className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600 transition-colors"
+            className="bg-blue-600 text-white rounded-md px-4 hover:bg-blue-700 transition"
           >
             Add
           </button>
         </div>
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {formData.skills.map((skill, i) => (
+        <div className="flex flex-wrap gap-2">
+          {formData.skills.map((skill, index) => (
             <div
-              key={i}
-              className="relative bg-gray-200 px-3 py-1 rounded-lg flex items-center"
+              key={index}
+              className="bg-gray-200 rounded-full px-3 py-1 flex items-center space-x-2"
             >
               <span>{skill}</span>
               <button
@@ -233,10 +249,11 @@ export default function ProfileForm({
                 onClick={() =>
                   setFormData({
                     ...formData,
-                    skills: formData.skills.filter((_, idx) => idx !== i),
+                    skills: formData.skills.filter((_, i) => i !== index),
                   })
                 }
-                className="absolute -top-1 -right-2 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-xs rounded-full hover:bg-red-600 transition-colors"
+                className="text-red-600 hover:text-red-800"
+                aria-label={`Remove skill ${skill}`}
               >
                 ×
               </button>
@@ -245,12 +262,11 @@ export default function ProfileForm({
         </div>
       </div>
 
-      {/* Projects */}
-      <div className="mt-4">
-        <h3 className="font-semibold mb-2">Projects</h3>
-
-        {/* Project Input Form */}
-        <div className="space-y-2">
+      {/* Projects Section */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Projects</h3>
+        {/* Project Input */}
+        <div className="space-y-3 border p-4 rounded-md bg-gray-50">
           <input
             type="text"
             placeholder="Project Title"
@@ -258,7 +274,8 @@ export default function ProfileForm({
             onChange={(e) =>
               setProjectInput({ ...projectInput, title: e.target.value })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-blue-500"
+            required
           />
           <textarea
             placeholder="Project Description"
@@ -266,19 +283,17 @@ export default function ProfileForm({
             onChange={(e) =>
               setProjectInput({ ...projectInput, description: e.target.value })
             }
-            className="border p-2 w-full rounded resize-none min-h-[6rem] max-h-40 overflow-auto focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all"
+            className="border rounded-md p-2 w-full min-h-[5rem] resize-none focus:outline-blue-500"
           />
           <input
-            type="text"
+            type="url"
             placeholder="Project Link"
             value={projectInput.link}
             onChange={(e) =>
               setProjectInput({ ...projectInput, link: e.target.value })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-blue-500"
           />
-
-          {/* Project Skills Input */}
           <input
             type="text"
             placeholder="Project Skills (comma separated)"
@@ -286,71 +301,76 @@ export default function ProfileForm({
             onChange={(e) =>
               setProjectInput({
                 ...projectInput,
-                pskills: e.target.value.split(",").map((s) => s.trim()),
+                pskills: e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
               })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-blue-500"
           />
-
           <button
             type="button"
             onClick={handleAddProject}
-            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition-colors flex items-center gap-2"
+            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 w-full transition"
           >
             {editingProjectIndex !== null ? "Update Project" : "Add Project"}
           </button>
         </div>
-
-        {/* Render added projects */}
+        {/* Projects List */}
         {formData.projects.length > 0 && (
-          <div className="mt-2 space-y-2">
+          <div className="mt-4 space-y-2">
             {formData.projects.map((proj, i) => (
               <div
                 key={i}
-                className="relative border p-2 rounded bg-gray-50 flex flex-col"
+                className="p-4 border rounded-md bg-white shadow-sm flex justify-between items-start"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold">{proj.title}</p>
-                    {proj.description && <p>{proj.description}</p>}
-                    {proj.link && (
-                      <p className="text-blue-500 underline">{proj.link}</p>
-                    )}
-                    {proj.pskills && proj.pskills.length > 0 && (
-                      <p className="mt-1">
-                        <span className="font-semibold">Skills:</span>{" "}
-                        {proj.pskills.join(", ")}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    {/* Edit button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProjectInput(proj);
-                        setEditingProjectIndex(i);
-                      }}
-                      className="text-green-500 hover:text-green-700 flex items-center gap-1"
+                <div>
+                  <p className="font-semibold">{proj.title}</p>
+                  {proj.description && <p>{proj.description}</p>}
+                  {proj.link && (
+                    <a
+                      href={proj.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
                     >
-                      <Edit2 className="w-4 h-4" /> Edit
-                    </button>
-                    {/* Delete button */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData({
-                          ...formData,
-                          projects: formData.projects.filter(
-                            (_, idx) => idx !== i
-                          ),
-                        })
-                      }
-                      className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                    >
-                      <Trash2 className="w-4 h-4" /> Delete
-                    </button>
-                  </div>
+                      {proj.link}
+                    </a>
+                  )}
+                  {proj.pskills && proj.pskills.length > 0 && (
+                    <p className="mt-1 text-sm text-gray-600">
+                      <strong>Skills:</strong> {proj.pskills.join(", ")}
+                    </p>
+                  )}
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProjectInput(proj);
+                      setEditingProjectIndex(i);
+                    }}
+                    className="text-green-600 hover:text-green-800"
+                    aria-label={`Edit project ${proj.title}`}
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        projects: formData.projects.filter(
+                          (_, idx) => idx !== i
+                        ),
+                      })
+                    }
+                    className="text-red-600 hover:text-red-800"
+                    aria-label={`Delete project ${proj.title}`}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -358,12 +378,11 @@ export default function ProfileForm({
         )}
       </div>
 
-      {/* Work Experience */}
-      <div className="mt-4">
-        <h3 className="font-semibold mb-2">Work Experience</h3>
-
-        {/* Work Input Form */}
-        <div className="space-y-2">
+      {/* Work Experience Section */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Work Experience</h3>
+        {/* Work Input */}
+        <div className="space-y-3 border p-4 rounded-md bg-gray-50">
           <input
             type="text"
             placeholder="Company"
@@ -371,7 +390,8 @@ export default function ProfileForm({
             onChange={(e) =>
               setWorkInput({ ...workInput, company: e.target.value })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-yellow-500"
+            required
           />
           <input
             type="text"
@@ -380,7 +400,7 @@ export default function ProfileForm({
             onChange={(e) =>
               setWorkInput({ ...workInput, role: e.target.value })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-yellow-500"
           />
           <input
             type="text"
@@ -389,7 +409,7 @@ export default function ProfileForm({
             onChange={(e) =>
               setWorkInput({ ...workInput, duration: e.target.value })
             }
-            className="border p-2 w-full rounded"
+            className="border rounded-md p-2 w-full focus:outline-yellow-500"
           />
           <textarea
             placeholder="Description"
@@ -397,59 +417,57 @@ export default function ProfileForm({
             onChange={(e) =>
               setWorkInput({ ...workInput, description: e.target.value })
             }
-            className="border p-2 w-full rounded resize-none min-h-[6rem] max-h-40 overflow-auto focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-all"
+            className="border rounded-md p-2 w-full min-h-[5rem] resize-none focus:outline-yellow-500"
           />
           <button
             type="button"
             onClick={handleAddWork}
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors flex items-center gap-2"
+            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 w-full transition"
           >
             {editingWorkIndex !== null ? "Update Work" : "Add Work"}
           </button>
         </div>
 
-        {/* Render added work items */}
+        {/* Work List */}
         {formData.work.length > 0 && (
-          <div className="mt-2 space-y-2">
+          <div className="mt-4 space-y-2">
             {formData.work.map((w, i) => (
               <div
                 key={i}
-                className="relative border p-2 rounded bg-gray-50 flex flex-col"
+                className="p-4 border rounded-md bg-white shadow-sm flex justify-between items-start"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold">
-                      {w.role} @ {w.company}
-                    </p>
-                    {w.duration && <p className="italic">{w.duration}</p>}
-                    {w.description && <p>{w.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    {/* Edit button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setWorkInput(w);
-                        setEditingWorkIndex(i);
-                      }}
-                      className="text-green-500 hover:text-green-700 flex items-center gap-1"
-                    >
-                      <Edit2 className="w-4 h-4" /> Edit
-                    </button>
-                    {/* Delete button */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData({
-                          ...formData,
-                          work: formData.work.filter((_, idx) => idx !== i),
-                        })
-                      }
-                      className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                    >
-                      <Trash2 className="w-4 h-4" /> Delete
-                    </button>
-                  </div>
+                <div>
+                  <p className="font-semibold">
+                    {w.role} @ {w.company}
+                  </p>
+                  {w.duration && <p className="italic">{w.duration}</p>}
+                  {w.description && <p>{w.description}</p>}
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWorkInput(w);
+                      setEditingWorkIndex(i);
+                    }}
+                    className="text-green-600 hover:text-green-800"
+                    aria-label={`Edit work at ${w.company}`}
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        work: formData.work.filter((_, idx) => idx !== i),
+                      })
+                    }
+                    className="text-red-600 hover:text-red-800"
+                    aria-label={`Delete work at ${w.company}`}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -457,64 +475,46 @@ export default function ProfileForm({
         )}
       </div>
 
-      {/* Links */}
+      {/* Links Section */}
       <div>
-        <h3 className="font-semibold">Links</h3>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="GitHub"
-            value={linksInput.github || ""}
-            onChange={(e) => handleLinksChange("github", e.target.value)}
-            className="border p-2 w-full rounded"
-          />
-          <input
-            type="text"
-            placeholder="LinkedIn"
-            value={linksInput.linkedin || ""}
-            onChange={(e) => handleLinksChange("linkedin", e.target.value)}
-            className="border p-2 w-full rounded"
-          />
-          <input
-            type="text"
-            placeholder="Portfolio"
-            value={linksInput.portfolio || ""}
-            onChange={(e) => handleLinksChange("portfolio", e.target.value)}
-            className="border p-2 w-full rounded"
-          />
-        </div>
+        <h3 className="text-lg font-semibold mb-2">Links</h3>
+        <input
+          type="url"
+          placeholder="GitHub"
+          value={linksInput.github || ""}
+          onChange={(e) => handleLinksChange("github", e.target.value)}
+          className="border rounded-md p-2 w-full focus:outline-blue-500 mb-2"
+        />
+        <input
+          type="url"
+          placeholder="LinkedIn"
+          value={linksInput.linkedin || ""}
+          onChange={(e) => handleLinksChange("linkedin", e.target.value)}
+          className="border rounded-md p-2 w-full focus:outline-blue-500 mb-2"
+        />
+        <input
+          type="url"
+          placeholder="Portfolio"
+          value={linksInput.portfolio || ""}
+          onChange={(e) => handleLinksChange("portfolio", e.target.value)}
+          className="border rounded-md p-2 w-full focus:outline-blue-500 mb-2"
+        />
       </div>
 
-      {/* Buttons */}
-      <div className="flex gap-3">
-        {!formData.id && (
-          <button
-            onClick={handleCreate}
-            className={`bg-blue-500 text-white px-4 py-2 rounded ${
-              saving ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={saving}
-          >
-            {saving ? "Creating..." : "Create New"}
-          </button>
-        )}
-
-        {formData.id && (
-          <button
-            onClick={handleUpdate}
-            className={`bg-green-500 text-white px-4 py-2 rounded ${
-              saving ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={saving}
-          >
-            {saving ? "Updating..." : "Update"}
-          </button>
-        )}
-
+      {/* Submit/Cancel Buttons */}
+      <div className="flex gap-3 justify-end">
+        <button
+          type="submit"
+          disabled={saving}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          {saving ? (formData.id ? "Updating..." : "Creating...") : formData.id ? "Update" : "Create"}
+        </button>
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-400 text-white px-4 py-2 rounded"
+          disabled={saving}
+          className="bg-gray-400 text-white px-6 py-2 rounded-md hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           Cancel
         </button>

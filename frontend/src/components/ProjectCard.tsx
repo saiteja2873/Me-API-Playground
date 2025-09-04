@@ -14,7 +14,7 @@ export default function ProjectCard({ title, description, link }: ProjectCardPro
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 mt-1 inline-block"
+          className="text-blue-500 mt-1 inline-block break-words max-w-56"
         >
           {link}
         </a>

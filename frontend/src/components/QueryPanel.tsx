@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // <-- added useRef
 import { Profile } from "../types/profile";
 import ProjectCard from "./ProjectCard";
 import ProfileView from "./ProfileView";
 import toast from "react-hot-toast";
+import { AnimatePresence, motion } from "framer-motion";
 
 import {
   BarChart,
@@ -31,8 +32,10 @@ export default function QueryPanel() {
     { skill: string; count: number }[]
   >([]);
 
-  // Toggle chart visibility
   const [showChart, setShowChart] = useState(false);
+
+  // **Ref to scroll to projects**
+  const projectsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:3001/query/skills/top")
@@ -40,6 +43,13 @@ export default function QueryPanel() {
       .then(setTopSkills)
       .catch((err) => console.error(err));
   }, []);
+
+  // Scroll helper
+  const scrollToProjects = () => {
+    setTimeout(() => {
+      projectsRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100); // slight delay to ensure DOM updates
+  };
 
   const handleSkillSearch = async (skillName?: string) => {
     const s = skillName || skill;
@@ -53,6 +63,7 @@ export default function QueryPanel() {
       const data = await res.json();
       setProjects(data);
       setProfiles([]);
+      scrollToProjects(); // scroll after results are set
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch projects");
@@ -62,26 +73,25 @@ export default function QueryPanel() {
   };
 
   const handleQuerySearch = async () => {
-  if (!query) {
-    return toast.error("Enter a query to search");
-  }
+    if (!query) return toast.error("Enter a query to search");
 
-  setLoading(true);
-  try {
-    const res = await fetch(`http://localhost:3001/query/search?q=${encodeURIComponent(query)}`);
-    const data: Partial<SearchResults> = await res.json();
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `http://localhost:3001/query/search?q=${encodeURIComponent(query)}`
+      );
+      const data: Partial<SearchResults> = await res.json();
 
-    // Safely default to empty arrays or objects
-    setProjects(data.projects ?? []);
-    setProfiles(data.profiles ?? []); // if your backend no longer returns 'profiles', you can skip this or set an empty array
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to search");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setProjects(data.projects ?? []);
+      setProfiles(data.profiles ?? []);
+      scrollToProjects(); // scroll after results are set
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to search");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
@@ -112,12 +122,12 @@ export default function QueryPanel() {
               onClick={() => handleSkillSearch(s.skill)}
               className="bg-green-100 px-3 py-1 rounded hover:bg-green-200 transition-colors"
             >
-              {s.skill} ({s.count})
+              {s.skill}
             </button>
           ))}
         </div>
 
-        {/* ✅ Button to show bar chart */}
+        {/* Button to show bar chart */}
         {topSkills.length > 0 && (
           <div className="mt-4">
             <button
@@ -129,43 +139,51 @@ export default function QueryPanel() {
           </div>
         )}
 
-        {/* ✅ Bar chart of top skills */}
-        {showChart && (
-          <div className="mt-4 p-4 bg-white rounded-lg shadow">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topSkills}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="skill" />
-                <YAxis />
-                <Tooltip />
-                <Bar
-                  dataKey="count"
-                  fill="#8884d8"
-                  radius={[8, 8, 0, 0]}
-                  onClick={(data) => {
-                    const payload = data.payload as {
-                      skill: string;
-                      count: number;
-                    };
-                    if (payload?.skill) {
-                      handleSkillSearch(payload.skill);
+        {/* Bar chart of top skills */}
+        <AnimatePresence>
+          {showChart && (
+            <motion.div
+              className="mt-4 p-4 bg-white rounded-lg shadow"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={topSkills}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="skill" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) =>
+                      `${value} ${value === 1 ? "project" : "projects"}`
                     }
-                  }}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-            <p className="text-center text-sm text-gray-500 mt-2">
-              💡 Click a bar to search projects with that skill
-            </p>
-          </div>
-        )}
+                  />
+                  <Bar
+                    dataKey="count"
+                    fill="#8884d8"
+                    radius={[8, 8, 0, 0]}
+                    onClick={(data) => {
+                      const payload = data.payload as {
+                        skill: string;
+                        count: number;
+                      };
+                      if (payload?.skill) handleSkillSearch(payload.skill);
+                    }}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              <p className="text-center text-sm text-gray-500 mt-2">
+                💡 Click a bar to search projects with that skill
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Text query search */}
+      {/* Query search */}
       <div>
-        <h2 className="font-semibold text-xl mb-2">
-          Search Profiles / Projects
-        </h2>
+        <h2 className="font-semibold text-xl mb-2">Search Based On Keywords</h2>
         <div className="flex gap-2">
           <input
             type="text"
@@ -183,12 +201,10 @@ export default function QueryPanel() {
         </div>
       </div>
 
-      {/* Loading */}
       {loading && <p className="text-center py-4">Loading...</p>}
 
-      {/* Projects Results */}
       {projects.length > 0 && (
-        <div>
+        <div ref={projectsRef}>
           <h3 className="font-semibold text-lg mb-2">Projects</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {projects.map((proj, i) => (
@@ -198,18 +214,26 @@ export default function QueryPanel() {
         </div>
       )}
 
-      {/* Profile Results */}
       {profiles.length > 0 && (
-        <div className="mt-6 space-y-4">
-          <h3 className="font-semibold text-lg mb-2">Profiles</h3>
+        <div className="mt-6 space-y-6" ref={projectsRef}>
+          <h3 className="font-semibold text-lg mb-2">Search Results</h3>
           {profiles.map((p) => (
-            <ProfileView key={p.id} profile={p} />
+            <div
+              key={p.id}
+              className="border p-4 rounded-lg bg-gray-50 shadow-sm"
+            >
+              <ProfileView profile={p} />
+
+              {/* Projects within profile */}
+
+              {/* Work experience within profile */}
+            </div>
           ))}
         </div>
       )}
 
       {/* No results */}
-      {!loading && projects.length === 0 && profiles.length === 0 && (
+      {!loading && profiles.length === 0 && projects.length === 0 && (
         <p className="text-center text-gray-400 py-4">No results found.</p>
       )}
     </div>

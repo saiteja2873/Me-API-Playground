@@ -58,60 +58,51 @@ query.get('/skills/top', async (c: any) => {
 // GET /query/search?q=...
 query.get('/search', async (c: any) => {
   const q = c.req.query('q')?.toLowerCase().trim();
-  if (!q) return c.json({}, 200);
+  if (!q) return c.json({ profiles: [] }, 200);
 
-  // Fetch the single profile
-  const profile = await prisma.profile.findFirst();
-  if (!profile) return c.json({}, 200);
+  const profiles = await prisma.profile.findMany();
 
-  const result: any = {};
+  const filteredProfiles = profiles.map(profile => {
+    const matched: any = { id: profile.id };
 
-  // Name
-  if (profile.name?.toLowerCase().includes(q)) result.name = profile.name;
+    // Name, Email, Education, Skills
+    if (profile.name?.toLowerCase().includes(q)) matched.name = profile.name;
+    if (profile.email?.toLowerCase().includes(q)) matched.email = profile.email;
+    if (profile.education && profile.education.toLowerCase().includes(q)) matched.education = profile.education;
+    const skills = profile.skills?.filter(skill => skill.toLowerCase().includes(q));
+    if (skills && skills.length > 0) matched.skills = skills;
 
-  // Email
-  if (profile.email?.toLowerCase().includes(q)) result.email = profile.email;
+    // Projects: return full project if query matches title, description, or link
+    const matchedProjects = profile.projects?.filter(p =>
+      (p.title && p.title.toLowerCase().includes(q)) ||
+      (p.description && p.description.toLowerCase().includes(q)) ||
+      (p.link && p.link.toLowerCase().includes(q))
+    );
+    if (matchedProjects && matchedProjects.length > 0) matched.projects = matchedProjects;
 
-  // Education
-  if (profile.education?.toLowerCase().includes(q)) result.education = profile.education;
+    // Work experience: return full work if query matches role, company, duration, description
+    const matchedWork = profile.work?.filter(w =>
+      (w.role && w.role.toLowerCase().includes(q)) ||
+      (w.company && w.company.toLowerCase().includes(q)) ||
+      (w.duration && w.duration.toLowerCase().includes(q)) ||
+      (w.description && w.description.toLowerCase().includes(q))
+    );
+    if (matchedWork && matchedWork.length > 0) matched.work = matchedWork;
 
-  // Skills
-  const matchedSkills = profile.skills?.filter(skill => skill.toLowerCase().includes(q));
-  if (matchedSkills?.length) result.skills = matchedSkills;
+    // Links
+    const links: Record<string, string> = {};
+    if (profile.links?.github && profile.links.github.toLowerCase().includes(q)) links.github = profile.links.github;
+    if (profile.links?.linkedin && profile.links.linkedin.toLowerCase().includes(q)) links.linkedin = profile.links.linkedin;
+    if (profile.links?.portfolio && profile.links.portfolio.toLowerCase().includes(q)) links.portfolio = profile.links.portfolio;
+    if (Object.keys(links).length > 0) matched.links = links;
 
-  // Projects
-  const matchedProjects = profile.projects
-    ?.map(p => {
-      const proj: any = {};
-      if (p.title?.toLowerCase().includes(q)) proj.title = p.title;
-      if (p.description?.toLowerCase().includes(q)) proj.description = p.description;
-      if (p.link?.toLowerCase().includes(q)) proj.link = p.link;
-      return Object.keys(proj).length ? proj : null;
-    })
-    .filter(Boolean);
-  if (matchedProjects?.length) result.projects = matchedProjects;
+    return matched;
+  }).filter(p =>
+    Object.keys(p).length > 1 && (p.projects?.length > 0 || p.work?.length > 0 || p.name || p.email || p.skills)
+  );
 
-  // Work
-  const matchedWork = profile.work
-    ?.map(w => {
-      const work: any = {};
-      if (w.role?.toLowerCase().includes(q)) work.role = w.role;
-      if (w.company?.toLowerCase().includes(q)) work.company = w.company;
-      if (w.duration?.toLowerCase().includes(q)) work.duration = w.duration;
-      if (w.description?.toLowerCase().includes(q)) work.description = w.description;
-      return Object.keys(work).length ? work : null;
-    })
-    .filter(Boolean);
-  if (matchedWork?.length) result.work = matchedWork;
-
-  // Links
-  const matchedLinks: Record<string, string> = {};
-  if (profile.links?.github?.toLowerCase().includes(q)) matchedLinks.github = profile.links.github;
-  if (profile.links?.linkedin?.toLowerCase().includes(q)) matchedLinks.linkedin = profile.links.linkedin;
-  if (profile.links?.portfolio?.toLowerCase().includes(q)) matchedLinks.portfolio = profile.links.portfolio;
-  if (Object.keys(matchedLinks).length) result.links = matchedLinks;
-
-  return c.json(result, 200);
+  return c.json({ profiles: filteredProfiles }, 200);
 });
+
 
 export default query;
