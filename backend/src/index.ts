@@ -7,7 +7,10 @@ import query from "./routes/query";
 const app = new Hono();
 
 app.use("*", cors({
-  origin: "http://localhost:3000", 
+  origin: [
+    "http://localhost:3000", // local dev
+    "https://me-api-playground-sooty.vercel.app" 
+  ],
   allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"],
   allowHeaders: ["Content-Type", "Authorization"],
 }));
