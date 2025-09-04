@@ -2,6 +2,7 @@ export interface Project {
   title: string;
   description: string;
   link: string;
+  pskills?: string[];
 }
 
 export interface WorkExperience {

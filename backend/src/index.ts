@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
 
 import profile from "./routes/profile";
+import query from "./routes/query";
 
 const app = new Hono();
 
@@ -13,6 +14,8 @@ app.use("*", cors({
 }));
 
 app.route("/profile", profile);
+app.route("/query", query)
+console.log("Query router mounted.");
 
 serve({
   fetch: app.fetch,

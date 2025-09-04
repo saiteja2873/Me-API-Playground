@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, PlusCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import ProfileForm from "../components/ProfileForm";
 import ProfileView from "../components/ProfileView";
 import ConfirmModal from "../components/ConfirmModal";
@@ -27,7 +28,6 @@ export default function Home() {
     fetchProfile();
   }, []);
 
-  // ✅ Handles POST (create new profile)
   const handleCreate = async (data: Profile) => {
     try {
       const payload = { ...data };
@@ -50,7 +50,6 @@ export default function Home() {
     }
   };
 
-  // ✅ Handles PUT (update existing profile)
   const handleUpdate = async (data: Profile) => {
     if (!data.id) {
       alert("No profile selected to update.");
@@ -97,7 +96,8 @@ export default function Home() {
     }
   };
 
-  if (loading) return <p className="p-6 text-center">Loading...</p>;
+  if (loading)
+    return <p className="p-6 text-center text-gray-500">Loading...</p>;
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -107,14 +107,14 @@ export default function Home() {
           {profile && (
             <button
               onClick={() => setIsEditing(true)}
-              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600"
+              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
             >
               <Pencil className="w-5 h-5" />
             </button>
           )}
           <button
             onClick={profile ? handleDeleteAndCreate : () => setIsEditing(true)}
-            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
+            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
           >
             <PlusCircle className="w-5 h-5" />
           </button>
@@ -130,11 +130,35 @@ export default function Home() {
         />
       )}
 
+      {!profile && !isEditing && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center mt-20 p-6 border-2 border-dashed border-gray-300 rounded-xl text-gray-400"
+        >
+          <p className="text-xl mb-4">No profile found.</p>
+          <p className="mb-6">Click the button above to create your profile.</p>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-block"
+          >
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+            >
+              Create Profile
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+
       {profile && !isEditing && <ProfileView profile={profile} />}
 
       {showConfirm && (
         <ConfirmModal
-          message="Delete existing profile?"
+          message="Do you want to delete existing profile?"
           onConfirm={confirmDelete}
           onCancel={() => setShowConfirm(false)}
         />
