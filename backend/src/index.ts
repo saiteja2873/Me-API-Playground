@@ -21,4 +21,4 @@ Bun.serve({
   port: 3001,
 });
 
-console.log("🚀 Server running at http://localhost:3001");
+console.log("🚀 Server running at https://me-api-playground-2gua.onrender.com");

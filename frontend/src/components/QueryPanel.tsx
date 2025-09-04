@@ -38,7 +38,7 @@ export default function QueryPanel() {
   const projectsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/query/skills/top")
+    fetch("https://me-api-playground-2gua.onrender.com/query/skills/top")
       .then((res) => res.json())
       .then(setTopSkills)
       .catch((err) => console.error(err));
@@ -58,7 +58,7 @@ export default function QueryPanel() {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/query/projects?skill=${s}`
+        `https://me-api-playground-2gua.onrender.com/query/projects?skill=${s}`
       );
       const data = await res.json();
       setProjects(data);
@@ -78,7 +78,7 @@ export default function QueryPanel() {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/query/search?q=${encodeURIComponent(query)}`
+        `https://me-api-playground-2gua.onrender.com/query/search?q=${encodeURIComponent(query)}`
       );
       const data: Partial<SearchResults> = await res.json();
 

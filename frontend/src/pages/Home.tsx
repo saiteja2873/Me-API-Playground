@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:3001/profile");
+        const res = await fetch("https://me-api-playground-2gua.onrender.com/profile");
         if (!res.ok) throw new Error("Failed to fetch profile");
         const data: Profile | null = await res.json();
         setProfile(data);
@@ -33,7 +33,7 @@ export default function Home() {
       const payload = { ...data };
       delete (payload as any).id;
 
-      const res = await fetch("http://localhost:3001/profile", {
+      const res = await fetch("https://me-api-playground-2gua.onrender.com/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -60,7 +60,7 @@ export default function Home() {
       const payload = { ...data };
       delete (payload as any).id;
 
-      const res = await fetch(`http://localhost:3001/profile/${data.id}`, {
+      const res = await fetch(`https://me-api-playground-2gua.onrender.com/profile/${data.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -82,7 +82,7 @@ export default function Home() {
   const confirmDelete = async () => {
     try {
       if (profile?.id) {
-        await fetch(`http://localhost:3001/profile/${profile.id}`, {
+        await fetch(`https://me-api-playground-2gua.onrender.com/profile/${profile.id}`, {
           method: "DELETE",
         });
       }
