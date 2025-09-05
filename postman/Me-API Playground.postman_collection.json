@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "5460486c-4e67-4988-baec-934360ba5fba",
+		"name": "Me-API Playground",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33742982"
+	},
+	"item": [
+		{
+			"name": "Local - Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/health",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Local - Profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/profile",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Local - Get Projects by Skill",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/query/projects?skill=node.js",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"query",
+						"projects"
+					],
+					"query": [
+						{
+							"key": "skill",
+							"value": "node.js"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Get Projects by Skill",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/query/projects?skill=node.js",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"query",
+						"projects"
+					],
+					"query": [
+						{
+							"key": "skill",
+							"value": "node.js"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Local - Top Skills",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/query/skills/top",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"query",
+						"skills",
+						"top"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Top Skills",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/query/skills/top",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"query",
+						"skills",
+						"top"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Local - Search based on Keywords",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/query/search?q=web",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"query",
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "web"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Search based on Keywords",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/query/search?q=web",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"query",
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "web"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Local - Update Profile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"projects\": [\r\n    {\r\n      \"title\": \"Teacher Management System\",\r\n      \"description\": \"• Built a role-based teacher management platform handling 500+ concurrent users with ¡200ms API latency via efficient MongoDB indexing and Next.js.\\n• Designed and implemented RESTful APIs with JWT authentication, refresh tokens, and secure session management.\\n• Optimized data retrieval with indexed queries, API caching, and server-side rendering, reducing load times by 45%.\\n• Integrated robust backend validation using Zod schemas to reduce input errors by 60%.\",\r\n      \"link\": \"https://teacher-management-one.vercel.app/\",\r\n      \"pskills\": [\"Next.js\", \"TypeScript\", \"MongoDB\", \"Node.js\"]\r\n    },\r\n    {\r\n      \"title\": \"Don’tTrustMe ChatBott\",\r\n      \"description\": \"• Developed a scalable AI chatbot backend capable of handling 200+ concurrent queries with real-time streaming, efficient memory management, asynchronous processing, and optimized server performance for low-latency responses.\\n• Designed RESTful APIs with conversation state management, error handling, and rate limiting.\\n• Automated deployment with CI/CD pipelines using GitHub Actions for zero-downtime deployments, and optimized runtime performance with Bun.\",\r\n      \"link\": \"https://github.com/saiteja2873/Don-tTrustMe-Chatbott\",\r\n      \"pskills\": [\"Node.js\", \"TypeScript\", \"OpenAI API\", \"Bun\"]\r\n    },\r\n    {\r\n      \"title\": \"Agricultural Management System\",\r\n      \"description\": \"• Developed a comprehensive web-based Agricultural Management System with a MongoDB-driven backend, implementing RESTful APIs to provide farmers with real-time data and decision support features.\\n• Integrated Weather API-driven predictive scheduling, cost analytics, and crop planning algorithms, improving resource utilization and reducing inefficiencies in agricultural operations by 35%.\\n• Ensured data consistency and reliability with proper indexing, schema design, and error handling.\",\r\n      \"link\": \"https://github.com/saiteja2873/AMS\",\r\n      \"pskills\": [\"Node.js\", \"Hono\", \"MongoDB\", \"REST APIs\"]\r\n    }\r\n  ],\r\n  \"work\": [\r\n    {\r\n      \"role\": \"Web Development Intern\",\r\n      \"company\": \"PRASUNET Pvt. Ltd.\",\r\n      \"duration\": \"3 Months\",\r\n      \"description\": \"• Implemented responsive and accessible UI components using HTML5, CSS3, JavaScript (ES6+), and ReactJS with state management, component lifecycle handling, and modular architecture.\\n• Developed robust server-side logic, handled RESTful API integration, implemented asynchronous data fetching, and collaborated with senior developers on full-stack feature development.\\n• Performed unit testing, integration testing, debugging, code refactoring, and performance optimization to enhance web application scalability, maintainability, and runtime efficiency.\"\r\n    }\r\n  ],\r\n  \"links\": {\r\n    \"github\": \"https://github.com/saiteja2873\",\r\n    \"linkedin\": \"https://www.linkedin.com/in/sai-teja-706163294/\",\r\n    \"portfolio\": \"https://my-portfolio-gamma-olive-44.vercel.app/\"\r\n  },\r\n  \"name\": \"SAI TEJA PASAM\",\r\n  \"email\": \"pasamsaiteja2020@gmail.com\",\r\n  \"education\": \"Indian Institute of Information Technology Kottayam, Kerala\",\r\n  \"skills\": [\r\n    \"Python\",\r\n    \"C\",\r\n    \"C++\",\r\n    \"Type Script\",\r\n    \"ReactJs\",\r\n    \"NodeJs\",\r\n    \"Hono\",\r\n    \"NextJs\",\r\n    \"Express\",\r\n    \"MongoDB\",\r\n    \"MySQL\",\r\n    \"Prisma\",\r\n    \"Git\",\r\n    \"GitHub\",\r\n    \"Postman\"\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/profile/68ba1348442bb14f41297f90",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"profile",
+						"68ba1348442bb14f41297f90"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deployed - Update Profile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"projects\": [\r\n    {\r\n      \"title\": \"Teacher Management System\",\r\n      \"description\": \"• Built a role-based teacher management platform handling 500+ concurrent users with ¡200ms API latency via efficient MongoDB indexing and Next.js.\\n• Designed and implemented RESTful APIs with JWT authentication, refresh tokens, and secure session management.\\n• Optimized data retrieval with indexed queries, API caching, and server-side rendering, reducing load times by 45%.\\n• Integrated robust backend validation using Zod schemas to reduce input errors by 60%.\",\r\n      \"link\": \"https://teacher-management-one.vercel.app/\",\r\n      \"pskills\": [\"Next.js\", \"TypeScript\", \"MongoDB\", \"Node.js\"]\r\n    },\r\n    {\r\n      \"title\": \"Don’tTrustMe ChatBott\",\r\n      \"description\": \"• Developed a scalable AI chatbot backend capable of handling 200+ concurrent queries with real-time streaming, efficient memory management, asynchronous processing, and optimized server performance for low-latency responses.\\n• Designed RESTful APIs with conversation state management, error handling, and rate limiting.\\n• Automated deployment with CI/CD pipelines using GitHub Actions for zero-downtime deployments, and optimized runtime performance with Bun.\",\r\n      \"link\": \"https://github.com/saiteja2873/Don-tTrustMe-Chatbott\",\r\n      \"pskills\": [\"Node.js\", \"TypeScript\", \"OpenAI API\", \"Bun\"]\r\n    },\r\n    {\r\n      \"title\": \"Agricultural Management System\",\r\n      \"description\": \"• Developed a comprehensive web-based Agricultural Management System with a MongoDB-driven backend, implementing RESTful APIs to provide farmers with real-time data and decision support features.\\n• Integrated Weather API-driven predictive scheduling, cost analytics, and crop planning algorithms, improving resource utilization and reducing inefficiencies in agricultural operations by 35%.\\n• Ensured data consistency and reliability with proper indexing, schema design, and error handling.\",\r\n      \"link\": \"https://github.com/saiteja2873/AMS\",\r\n      \"pskills\": [\"Node.js\", \"Hono\", \"MongoDB\", \"REST APIs\"]\r\n    }\r\n  ],\r\n  \"work\": [\r\n    {\r\n      \"role\": \"Web Development Intern\",\r\n      \"company\": \"PRASUNET Pvt. Ltd.\",\r\n      \"duration\": \"3 Months\",\r\n      \"description\": \"• Implemented responsive and accessible UI components using HTML5, CSS3, JavaScript (ES6+), and ReactJS with state management, component lifecycle handling, and modular architecture.\\n• Developed robust server-side logic, handled RESTful API integration, implemented asynchronous data fetching, and collaborated with senior developers on full-stack feature development.\\n• Performed unit testing, integration testing, debugging, code refactoring, and performance optimization to enhance web application scalability, maintainability, and runtime efficiency.\"\r\n    }\r\n  ],\r\n  \"links\": {\r\n    \"github\": \"https://github.com/saiteja2873\",\r\n    \"linkedin\": \"https://www.linkedin.com/in/sai-teja-706163294/\",\r\n    \"portfolio\": \"https://my-portfolio-gamma-olive-44.vercel.app/\"\r\n  },\r\n  \"name\": \"SAI TEJA PASAM\",\r\n  \"email\": \"pasamsaiteja2023@gmail.com\",\r\n  \"education\": \"Indian Institute of Information Technology Kottayam, Kerala\",\r\n  \"skills\": [\r\n    \"Python\",\r\n    \"C\",\r\n    \"C++\",\r\n    \"Type Script\",\r\n    \"ReactJs\",\r\n    \"NodeJs\",\r\n    \"Hono\",\r\n    \"NextJs\",\r\n    \"Express\",\r\n    \"MongoDB\",\r\n    \"MySQL\",\r\n    \"Prisma\",\r\n    \"Git\",\r\n    \"GitHub\",\r\n    \"Postman\"\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://me-api-playground-3-hlsg.onrender.com/profile/68ba1348442bb14f41297f90",
+					"protocol": "https",
+					"host": [
+						"me-api-playground-3-hlsg",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"profile",
+						"68ba1348442bb14f41297f90"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
