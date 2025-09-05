@@ -18,19 +18,18 @@ profile.post("/", async (c: any) => {
   if (data.projects !== undefined) {
     data.projects = data.projects.map((p: any) => ({
       ...p,
-      pskills: Array.isArray(p.pskills) ? p.pskills : [], // ensure []
+      pskills: Array.isArray(p.pskills) ? p.pskills : [], 
     }));
   }
   data.work = data.work || [];
   data.links = data.links || {};
 
-  await prisma.profile.deleteMany(); // optional, if you want only one profile
+  await prisma.profile.deleteMany(); 
   const created = await prisma.profile.create({ data });
 
   return c.json(created);
 });
 
-// Update an existing profile
 profile.put("/:id", async (c: any) => {
   const id = c.req.param("id");
   const data = await c.req.json();
@@ -57,7 +56,6 @@ profile.put("/:id", async (c: any) => {
   return c.json(updated);
 });
 
-// ✅ Delete profile
 profile.delete("/:id", async (c: any) => {
   const id = c.req.param("id");
 

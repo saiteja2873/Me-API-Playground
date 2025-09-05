@@ -9,7 +9,7 @@ const app = new Hono();
 
 app.use("*", cors({
   origin: [
-    "http://localhost:3000", // local dev
+    "http://localhost:3000", 
     "https://me-api-playground-sooty.vercel.app" 
   ],
   allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"],

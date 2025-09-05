@@ -26,7 +26,7 @@ export default function ProfileForm({
       skills: [],
       projects: [],
       work: [],
-      links: { github: "", linkedin: "", portfolio: "" }, // ensure keys initialized
+      links: { github: "", linkedin: "", portfolio: "" }, 
     }
   );
   const [skillInput, setSkillInput] = useState("");
@@ -50,8 +50,6 @@ export default function ProfileForm({
   const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null);
   const [editingWorkIndex, setEditingWorkIndex] = useState<number | null>(null);
   const navigate = useNavigate();
-
-  // Handlers...
 
   const handleAddSkill = () => {
     const trimmed = skillInput.trim();
@@ -143,7 +141,7 @@ export default function ProfileForm({
     }
 
     try {
-      const { id, ...payload } = formData; // remove id for create
+      const { id, ...payload } = formData; 
       onCreate(payload);
       toast.success("Profile created successfully!");
       navigate("/");
@@ -188,7 +186,6 @@ export default function ProfileForm({
     >
       {error && <p className="text-red-600 font-semibold">{error}</p>}
 
-      {/* Basic Info */}
       <div className="space-y-3">
         <input
           type="text"
@@ -218,7 +215,6 @@ export default function ProfileForm({
         />
       </div>
 
-      {/* Skills Section */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Skills</h3>
         <div className="flex gap-2 mb-3">
@@ -262,10 +258,8 @@ export default function ProfileForm({
         </div>
       </div>
 
-      {/* Projects Section */}
       <div>
         <h3 className="text-lg font-semibold mb-3">Projects</h3>
-        {/* Project Input */}
         <div className="space-y-3 border p-4 rounded-md bg-gray-50">
           <input
             type="text"
@@ -317,7 +311,6 @@ export default function ProfileForm({
             {editingProjectIndex !== null ? "Update Project" : "Add Project"}
           </button>
         </div>
-        {/* Projects List */}
         {formData.projects.length > 0 && (
           <div className="mt-4 space-y-2">
             {formData.projects.map((proj, i) => (
@@ -378,10 +371,8 @@ export default function ProfileForm({
         )}
       </div>
 
-      {/* Work Experience Section */}
       <div>
         <h3 className="text-lg font-semibold mb-3">Work Experience</h3>
-        {/* Work Input */}
         <div className="space-y-3 border p-4 rounded-md bg-gray-50">
           <input
             type="text"
@@ -428,7 +419,6 @@ export default function ProfileForm({
           </button>
         </div>
 
-        {/* Work List */}
         {formData.work.length > 0 && (
           <div className="mt-4 space-y-2">
             {formData.work.map((w, i) => (
@@ -475,7 +465,6 @@ export default function ProfileForm({
         )}
       </div>
 
-      {/* Links Section */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Links</h3>
         <input
@@ -501,7 +490,6 @@ export default function ProfileForm({
         />
       </div>
 
-      {/* Submit/Cancel Buttons */}
       <div className="flex gap-3 justify-end">
         <button
           type="submit"

@@ -5,7 +5,6 @@ interface Props {
 }
 
 export default function ProfileView({ profile }: Props) {
-  // Check if any links exist
   const hasLinks = profile.links && (
     profile.links.github ||
     profile.links.linkedin ||
@@ -15,14 +14,12 @@ export default function ProfileView({ profile }: Props) {
   return (
     <div className="bg-white shadow-lg p-6 rounded-xl space-y-6">
 
-      {/* Basic Info */}
       <div>
         <h2 className="text-2xl font-bold">{profile.name}</h2>
         <p>{profile.email}</p>
         {profile.education && <p className="italic">{profile.education}</p>}
       </div>
 
-      {/* Skills */}
       {profile.skills && profile.skills.length > 0 && (
         <div>
           <h3 className="font-semibold">Skills</h3>
@@ -34,7 +31,6 @@ export default function ProfileView({ profile }: Props) {
         </div>
       )}
 
-      {/* Projects */}
       {profile.projects && profile.projects.length > 0 && (
         <div>
           <h3 className="font-semibold">Projects</h3>
@@ -54,7 +50,6 @@ export default function ProfileView({ profile }: Props) {
         </div>
       )}
 
-      {/* Work Experience */}
       {profile.work && profile.work.length > 0 && (
         <div>
           <h3 className="font-semibold">Work Experience</h3>
@@ -70,7 +65,6 @@ export default function ProfileView({ profile }: Props) {
         </div>
       )}
 
-      {/* Links */}
       {hasLinks && (
         <div>
           <h3 className="font-semibold">Links</h3>

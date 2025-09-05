@@ -44,11 +44,10 @@ export default function QueryPanel() {
       .catch((err) => console.error(err));
   }, []);
 
-  // Scroll helper
   const scrollToProjects = () => {
     setTimeout(() => {
       projectsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100); // slight delay to ensure DOM updates
+    }, 100); 
   };
 
   const handleSkillSearch = async (skillName?: string) => {
@@ -63,7 +62,7 @@ export default function QueryPanel() {
       const data = await res.json();
       setProjects(data);
       setProfiles([]);
-      scrollToProjects(); // scroll after results are set
+      scrollToProjects(); 
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch projects");
@@ -84,7 +83,7 @@ export default function QueryPanel() {
 
       setProjects(data.projects ?? []);
       setProfiles(data.profiles ?? []);
-      scrollToProjects(); // scroll after results are set
+      scrollToProjects(); 
     } catch (err) {
       console.error(err);
       toast.error("Failed to search");
@@ -95,7 +94,6 @@ export default function QueryPanel() {
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      {/* Skill search */}
       <div>
         <h2 className="font-semibold text-xl mb-2">Search by Skill</h2>
         <div className="flex gap-2 mb-2">
@@ -114,7 +112,6 @@ export default function QueryPanel() {
           </button>
         </div>
 
-        {/* Quick top skill buttons */}
         <div className="flex flex-wrap gap-2">
           {topSkills.map((s, i) => (
             <button
@@ -127,7 +124,6 @@ export default function QueryPanel() {
           ))}
         </div>
 
-        {/* Button to show bar chart */}
         {topSkills.length > 0 && (
           <div className="mt-4">
             <button
@@ -139,7 +135,6 @@ export default function QueryPanel() {
           </div>
         )}
 
-        {/* Bar chart of top skills */}
         <AnimatePresence>
           {showChart && (
             <motion.div
@@ -181,7 +176,6 @@ export default function QueryPanel() {
         </AnimatePresence>
       </div>
 
-      {/* Query search */}
       <div>
         <h2 className="font-semibold text-xl mb-2">Search Based On Keywords</h2>
         <div className="flex gap-2">
@@ -224,15 +218,11 @@ export default function QueryPanel() {
             >
               <ProfileView profile={p} />
 
-              {/* Projects within profile */}
-
-              {/* Work experience within profile */}
             </div>
           ))}
         </div>
       )}
 
-      {/* No results */}
       {!loading && profiles.length === 0 && projects.length === 0 && (
         <p className="text-center text-gray-400 py-4">No results found.</p>
       )}

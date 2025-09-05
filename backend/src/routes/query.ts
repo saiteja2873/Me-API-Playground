@@ -9,12 +9,10 @@ query.get('/projects', async (c: any) => {
   const skill = c.req.query('skill')?.toLowerCase();
   if (!skill) return c.json([], 200);
 
-  // Fetch all profiles with their projects including pskills
   const profiles = await prisma.profile.findMany({
     select: { projects: true }
   });
 
-  // Filter projects by pskills only
   const projects = profiles.flatMap(p =>
     p.projects.filter(proj =>
       proj.pskills?.some(s => s.toLowerCase() === skill)
@@ -24,7 +22,6 @@ query.get('/projects', async (c: any) => {
   return c.json(projects, 200);
 });
 
-// GET /query/skills/top
 query.get('/skills/top', async (c: any) => {
   const profiles = await prisma.profile.findMany({
     select: { projects: true }
@@ -50,7 +47,6 @@ query.get('/skills/top', async (c: any) => {
 });
 
 
-// GET /query/search?q=...
 query.get('/search', async (c: any) => {
   const q = c.req.query('q')?.toLowerCase().trim();
   if (!q) return c.json({ profiles: [] }, 200);
@@ -60,14 +56,12 @@ query.get('/search', async (c: any) => {
   const filteredProfiles = profiles.map(profile => {
     const matched: any = { id: profile.id };
 
-    // Name, Email, Education, Skills
     if (profile.name?.toLowerCase().includes(q)) matched.name = profile.name;
     if (profile.email?.toLowerCase().includes(q)) matched.email = profile.email;
     if (profile.education && profile.education.toLowerCase().includes(q)) matched.education = profile.education;
     const skills = profile.skills?.filter(skill => skill.toLowerCase().includes(q));
     if (skills && skills.length > 0) matched.skills = skills;
 
-    // Projects: return full project if query matches title, description, or link
     const matchedProjects = profile.projects?.filter(p =>
       (p.title && p.title.toLowerCase().includes(q)) ||
       (p.description && p.description.toLowerCase().includes(q)) ||
@@ -75,7 +69,6 @@ query.get('/search', async (c: any) => {
     );
     if (matchedProjects && matchedProjects.length > 0) matched.projects = matchedProjects;
 
-    // Work experience: return full work if query matches role, company, duration, description
     const matchedWork = profile.work?.filter(w =>
       (w.role && w.role.toLowerCase().includes(q)) ||
       (w.company && w.company.toLowerCase().includes(q)) ||
@@ -84,7 +77,6 @@ query.get('/search', async (c: any) => {
     );
     if (matchedWork && matchedWork.length > 0) matched.work = matchedWork;
 
-    // Links
     const links: Record<string, string> = {};
     if (profile.links?.github && profile.links.github.toLowerCase().includes(q)) links.github = profile.links.github;
     if (profile.links?.linkedin && profile.links.linkedin.toLowerCase().includes(q)) links.linkedin = profile.links.linkedin;
