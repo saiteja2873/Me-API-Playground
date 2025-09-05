@@ -100,7 +100,7 @@ export default function Home() {
     return <p className="p-6 text-center text-gray-500">Loading...</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Profile</h1>
         <div className="flex gap-3">

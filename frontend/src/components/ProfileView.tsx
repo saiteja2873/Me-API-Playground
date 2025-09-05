@@ -12,7 +12,7 @@ export default function ProfileView({ profile }: Props) {
   );
 
   return (
-    <div className="bg-white shadow-lg p-6 rounded-xl space-y-6">
+    <div className="bg-white shadow-lg pt-4 pl-4 sm:p-6 rounded-xl space-y-6">
 
       <div>
         <h2 className="text-2xl font-bold">{profile.name}</h2>
@@ -40,7 +40,7 @@ export default function ProfileView({ profile }: Props) {
                 <p className="font-semibold">{proj.title}</p>
                 {proj.description && <p>{proj.description}</p>}
                 {proj.link && (
-                  <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                  <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 break-all">
                     {proj.link}
                   </a>
                 )}

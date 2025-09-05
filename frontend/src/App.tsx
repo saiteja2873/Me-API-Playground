@@ -34,7 +34,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex relative overflow-hidden">
       <motion.div
-        className="border-r border-gray-300 p-4 overflow-y-auto h-screen"
+        className="border-r border-gray-300 p-0 sm:p-4 overflow-y-auto h-screen"
         animate={{ width: leftWidth }}
         transition={{ duration: 0.5 }}
       >
@@ -42,7 +42,7 @@ function App() {
       </motion.div>
 
       <motion.div
-        className="p-4 overflow-y-auto h-screen border-l border-gray-300"
+        className="p-1 sm:p-4 overflow-y-auto h-screen border-l border-gray-300"
         animate={{ width: rightWidth }}
         transition={{ duration: 0.5 }}
       >
@@ -51,7 +51,7 @@ function App() {
 
       <button
         onClick={() => setShowRight(!showRight)}
-        className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-blue-500 text-white p-3 rounded-l-full shadow-lg hover:bg-blue-600 transition z-50"
+        className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-blue-500 text-white p-1 sm:p-3 rounded-l-full shadow-lg hover:bg-blue-600 transition z-50"
       >
         {showRight ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
       </button>
