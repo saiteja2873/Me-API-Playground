@@ -1,19 +1,14 @@
 {
   "name": "backend",
-  "module": "index.ts",
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun prisma generate",
+    "build": "bun install && bun prisma generate",
     "start": "bun run src/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "prisma": "6.15.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
-  },
-  "peerDependencies": {
     "typescript": "^5.9.2"
   },
   "dependencies": {
