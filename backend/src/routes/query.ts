@@ -4,12 +4,7 @@ import { PrismaClient } from '../../generated/prisma';
 const prisma = new PrismaClient();
 const query = new Hono();
 
-// query.use("*", async (c : any, next : any) => {
-//   console.log("🟢 Query route hit:", c.req.method, c.req.url);
-//   await next();
-// });
 
-// GET /query/projects?skill=python
 query.get('/projects', async (c: any) => {
   const skill = c.req.query('skill')?.toLowerCase();
   if (!skill) return c.json([], 200);
