@@ -10,7 +10,7 @@ export default function ProfileView({ profile }: Props) {
     (profile.links.github || profile.links.linkedin || profile.links.portfolio);
 
   return (
-    <div className="bg-white shadow-lg pt-4 pl-4 pb-4 sm:p-6 rounded-xl space-y-6">
+    <div className="bg-white shadow-lg p-4 sm:p-6 rounded-xl space-y-6">
       <div>
         <h2 className="text-2xl font-bold">{profile.name}</h2>
         <p>{profile.email}</p>
